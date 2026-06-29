@@ -12,15 +12,15 @@ import {
 
 interface ExpenseSidebarProps {
     expenses: Expense[];
-    onAddExpense: (expense: Expense) => void;
+    onAddExpense: (expense: Expense) => Promise<void> | void;
 }
 
 const COLORS = ["#4F46E5", "#7C3AED", "#EC4899", "#14B8A6"];
 
-const ExpenseSidebar = ({
+export default function ExpenseSidebar({
     expenses,
     onAddExpense,
-}: ExpenseSidebarProps) => {
+}: ExpenseSidebarProps) {
     const [formData, setFormData] = useState({
         title: "",
         category: "",
@@ -28,7 +28,7 @@ const ExpenseSidebar = ({
         date: "",
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const newExpense: Expense = {
@@ -38,7 +38,7 @@ const ExpenseSidebar = ({
             date: formData.date,
         };
 
-        onAddExpense(newExpense);
+        await onAddExpense(newExpense);
 
         setFormData({
             title: "",
@@ -49,7 +49,7 @@ const ExpenseSidebar = ({
     };
 
     const groupedData = expenses.reduce(
-        (acc: { [key: string]: number }, expense) => {
+        (acc: Record<string, number>, expense) => {
             acc[expense.category] =
                 (acc[expense.category] || 0) + expense.amount;
             return acc;
@@ -57,28 +57,24 @@ const ExpenseSidebar = ({
         {}
     );
 
-    const chartData = Object.entries(groupedData).map(
-        ([name, value]) => ({
-            name,
-            value,
-        })
-    );
+    const chartData = Object.entries(groupedData).map(([name, value]) => ({
+        name,
+        value,
+    }));
 
     return (
         <aside className="h-screen overflow-y-auto border-r bg-gradient-to-b from-slate-50 to-white p-6 flex flex-col">
-
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-slate-800">
                     Expense Tracker
                 </h1>
 
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="mt-1 text-sm text-slate-500">
                     Track every spending
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-
                 <input
                     type="text"
                     placeholder="Expense title"
@@ -139,7 +135,6 @@ const ExpenseSidebar = ({
             </form>
 
             <div className="mt-10 rounded-3xl bg-white p-4 shadow-md">
-
                 <h3 className="mb-4 text-sm font-semibold text-slate-700">
                     Expense Distribution
                 </h3>
@@ -152,7 +147,6 @@ const ExpenseSidebar = ({
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
-
                                 <Pie
                                     data={chartData}
                                     dataKey="value"
@@ -161,24 +155,17 @@ const ExpenseSidebar = ({
                                     {chartData.map((_, index) => (
                                         <Cell
                                             key={index}
-                                            fill={
-                                                COLORS[index % COLORS.length]
-                                            }
+                                            fill={COLORS[index % COLORS.length]}
                                         />
                                     ))}
                                 </Pie>
 
                                 <Tooltip />
-
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
                 )}
-
             </div>
-
         </aside>
     );
-};
-
-export default ExpenseSidebar;
+}
