@@ -126,8 +126,9 @@ export default function HomePage() {
       <section className="col-span-3">
         <ExpenseSidebar
           expenses={expenses}
-          onAddExpense={handleAddExpense}
-        />
+          onAddExpense={handleAddExpense} onUpdateExpense={function (id: string, updatedExpense: Expense): Promise<void> {
+            throw new Error("Function not implemented.");
+          }} editingExpense={null} />
       </section>
 
       <section className="col-span-9 p-8 space-y-8">

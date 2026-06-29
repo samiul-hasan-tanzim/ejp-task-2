@@ -2,7 +2,7 @@ const API_URL = "https://ejp-task-2-server.vercel.app";
 
 
 // create
-export const createExpense = async (data: any) => {
+export const createExpense = async (data: unknown) => {
     const res = await fetch(`${API_URL}/expenses`, {
         method: "POST",
         headers: {
