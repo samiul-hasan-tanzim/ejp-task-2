@@ -7,7 +7,7 @@ import ExpenseTable from "@/components/dashboard/ExpenseTable";
 import { Expense } from "@/types/expense";
 import ExpenseSidebar from "@/components/sidebar/ExpensePieChart";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://ejp-task-2-server.vercel.app";
 
 export default function HomePage() {
   const [initialBalance] = useState(50000);
