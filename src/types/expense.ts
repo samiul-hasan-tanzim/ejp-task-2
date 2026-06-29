@@ -1,6 +1,5 @@
-
 export interface Expense {
-    id: string;
+    _id?: string;   // mongodb id
     title: string;
     category: string;
     amount: number;

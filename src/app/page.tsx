@@ -1,39 +1,149 @@
 "use client";
 
-import { useState } from "react";
-import ExpenseForm from "@/components/ExpenseForm";
-import BalanceCard from "@/components/BalanceCard";
-import ExpenseTable from "@/components/ExpenseTable";
+import { useEffect, useState } from "react";
+// import ExpenseSidebar from "@/components/sidebar/ExpenseSidebar";
+import BalanceCard from "@/components/dashboard/BalanceCard";
+import ExpenseTable from "@/components/dashboard/ExpenseTable";
 import { Expense } from "@/types/expense";
+import ExpenseSidebar from "@/components/sidebar/ExpensePieChart";
 
-export default function Home() {
-  const [balance, setBalance] = useState(50000);
+const API_URL = "http://localhost:5000";
+
+export default function HomePage() {
+  const [initialBalance] = useState(50000);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAddExpense = (expense: Expense) => {
-    // add new expense
-    setExpenses((prev) => [...prev, expense]);
+  // edit state
+  const [editingExpense, setEditingExpense] =
+    useState<Expense | null>(null);
 
-    // minus balance
-    setBalance((prev) => prev - expense.amount);
+  // GET
+  const fetchExpenses = async () => {
+    try {
+      const res = await fetch(`${API_URL}/expenses`);
+      const data = await res.json();
+
+      if (data.success) {
+        setExpenses(data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <main className="grid grid-cols-12 min-h-screen">
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
-      {/* Left Side → Form */}
-      <section className="col-span-3 border-r p-6">
-        <ExpenseForm onAddExpense={handleAddExpense} />
+  // POST
+  const handleAddExpense = async (expense: Expense) => {
+    try {
+      const res = await fetch(`${API_URL}/expenses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...expense,
+          createdAt: new Date(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        fetchExpenses();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // DELETE
+  const handleDeleteExpense = async (id: string) => {
+    try {
+      const res = await fetch(`${API_URL}/expenses/${id}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        fetchExpenses();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // PATCH
+  const handleUpdateExpense = async (
+    id: string,
+    updatedExpense: Expense
+  ) => {
+    try {
+      const res = await fetch(
+        `${API_URL}/expenses/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedExpense),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        fetchExpenses();
+        setEditingExpense(null); // reset edit mode
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // when click edit button
+  const handleEditClick = (expense: Expense) => {
+    setEditingExpense(expense);
+  };
+
+  const balance =
+    initialBalance -
+    expenses.reduce(
+      (total, expense) => total + expense.amount,
+      0
+    );
+
+  return (
+    <main className="grid min-h-screen grid-cols-12 bg-slate-50">
+
+      <section className="col-span-3">
+        <ExpenseSidebar
+          expenses={expenses}
+          onAddExpense={handleAddExpense}
+          onUpdateExpense={handleUpdateExpense}
+          editingExpense={editingExpense}
+        />
       </section>
 
-      {/* Right Side */}
-      <section className="col-span-9 p-6 space-y-6">
+      <section className="col-span-9 p-8 space-y-8">
 
-        {/* Balance */}
         <BalanceCard balance={balance} />
 
-        {/* Expense List */}
-        <ExpenseTable expenses={expenses} />
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <ExpenseTable
+            expenses={expenses}
+            onDeleteExpense={handleDeleteExpense}
+            onEditExpense={handleEditClick}
+          />
+        )}
 
       </section>
 

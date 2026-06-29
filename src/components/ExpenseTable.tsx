@@ -1,54 +1,109 @@
+"use client";
+
+import { useState } from "react";
 import { Expense } from "@/types/expense";
 
-interface ExpenseTableProps {
-    expenses: Expense[];
+interface ExpenseFormProps {
+    onAddExpense: (expense: Expense) => void;
 }
 
-const ExpenseTable = ({ expenses }: ExpenseTableProps) => {
+const ExpenseForm = ({ onAddExpense }: ExpenseFormProps) => {
+    const [formData, setFormData] = useState({
+        title: "",
+        category: "",
+        amount: "",
+        date: "",
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const newExpense: Expense = {
+            id: Date.now().toString(),
+            title: formData.title,
+            category: formData.category,
+            amount: Number(formData.amount),
+            date: formData.date,
+        };
+
+        onAddExpense(newExpense);
+
+        setFormData({
+            title: "",
+            category: "",
+            amount: "",
+            date: "",
+        });
+    };
+
     return (
-        <div className="border rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-bold mb-4">
-                Expense History
-            </h2>
+        <aside className="h-screen border-r bg-white p-6 flex flex-col">
 
-            {expenses.length === 0 ? (
-                <p className="text-gray-500">
-                    No expenses added yet.
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold tracking-tight">
+                    Expense Tracker
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">
+                    Manage your daily spending
                 </p>
-            ) : (
-                <table className="w-full text-left">
-                    <thead className="border-b">
-                        <tr>
-                            <th className="py-3">Name</th>
-                            <th className="py-3">Category</th>
-                            <th className="py-3">Date</th>
-                            <th className="py-3">Amount</th>
-                        </tr>
-                    </thead>
+            </div>
 
-                    <tbody>
-                        {expenses.map((expense) => (
-                            <tr key={expense.id} className="border-b">
-                                <td className="py-3">{expense.title}</td>
+            <form onSubmit={handleSubmit} className="space-y-4">
 
-                                <td className="py-3">
-                                    {expense.category}
-                                </td>
+                <input
+                    type="text"
+                    placeholder="Expense title"
+                    value={formData.title}
+                    onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                />
 
-                                <td className="py-3">
-                                    {expense.date}
-                                </td>
+                <input
+                    type="text"
+                    placeholder="Category"
+                    value={formData.category}
+                    onChange={(e) =>
+                        setFormData({ ...formData, category: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                />
 
-                                <td className="py-3">
-                                    ৳ {expense.amount}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
+                <input
+                    type="number"
+                    placeholder="Amount"
+                    value={formData.amount}
+                    onChange={(e) =>
+                        setFormData({ ...formData, amount: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                />
+
+                <input
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) =>
+                        setFormData({ ...formData, date: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+                />
+
+                <button
+                    type="submit"
+                    className="w-full rounded-xl bg-black py-3 font-medium text-white transition hover:opacity-90"
+                >
+                    Add Expense
+                </button>
+            </form>
+
+            {/* pie chart পরে এখানে বসবে */}
+            <div className="mt-10">
+                Pie Chart Here
+            </div>
+
+        </aside>
     );
 };
 
-export default ExpenseTable;
+export default ExpenseForm;
