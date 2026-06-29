@@ -1,3 +1,5 @@
+"use client";
+
 import { Expense } from "@/types/expense";
 import { Trash2, Pencil } from "lucide-react";
 
@@ -7,11 +9,11 @@ interface ExpenseTableProps {
     onEditExpense: (expense: Expense) => void;
 }
 
-const ExpenseTable = ({
+export default function ExpenseTable({
     expenses,
     onDeleteExpense,
     onEditExpense,
-}: ExpenseTableProps) => {
+}: ExpenseTableProps) {
     return (
         <div className="rounded-3xl bg-white p-6 shadow-md border border-slate-100">
 
@@ -69,21 +71,13 @@ const ExpenseTable = ({
 
                                     <td className="py-4 flex gap-2">
 
-                                        {/* Edit Button */}
                                         <button
-                                            onClick={() => {
-                                                console.log("clicked", expense);
-                                                onEditExpense(expense);
-                                            }}
+                                            onClick={() => onEditExpense(expense)}
                                             className="rounded-lg p-2 hover:bg-blue-50"
                                         >
-                                            <Pencil
-                                                size={18}
-                                                className="text-blue-500"
-                                            />
+                                            <Pencil size={18} className="text-blue-500" />
                                         </button>
 
-                                        {/* Delete Button */}
                                         <button
                                             onClick={() =>
                                                 expense._id &&
@@ -91,10 +85,7 @@ const ExpenseTable = ({
                                             }
                                             className="rounded-lg p-2 hover:bg-red-50"
                                         >
-                                            <Trash2
-                                                size={18}
-                                                className="text-red-500"
-                                            />
+                                            <Trash2 size={18} className="text-red-500" />
                                         </button>
 
                                     </td>
@@ -107,6 +98,4 @@ const ExpenseTable = ({
             )}
         </div>
     );
-};
-
-export default ExpenseTable;
+}
