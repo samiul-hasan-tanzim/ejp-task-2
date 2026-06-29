@@ -121,14 +121,16 @@ export default function HomePage() {
     );
 
   return (
-    <main className="grid min-h-screen grid-cols-12 bg-slate-50">
+    <main className="md:grid min-h-screen grid-cols-12 bg-slate-50">
 
       <section className="col-span-3">
         <ExpenseSidebar
           expenses={expenses}
-          onAddExpense={handleAddExpense} onUpdateExpense={function (id: string, updatedExpense: Expense): Promise<void> {
-            throw new Error("Function not implemented.");
-          }} editingExpense={null} />
+          onAddExpense={handleAddExpense}
+          onUpdateExpense={handleUpdateExpense}
+          editingExpense={editingExpense}
+          onCancelEdit={() => setEditingExpense(null)}
+        />
       </section>
 
       <section className="col-span-9 p-8 space-y-8">

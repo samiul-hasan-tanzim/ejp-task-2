@@ -31,3 +31,17 @@ export const deleteExpense = async (id: string) => {
 
     return res.json();
 };
+
+
+// update
+export const updateExpense = async (id: string, data: unknown) => {
+    const res = await fetch(`${API_URL}/expenses/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+
+    return res.json();
+};

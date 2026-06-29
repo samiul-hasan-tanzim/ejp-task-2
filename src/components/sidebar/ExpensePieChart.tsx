@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Expense } from "@/types/expense";
 import {
     PieChart,
@@ -18,6 +18,7 @@ interface ExpenseSidebarProps {
         updatedExpense: Expense
     ) => Promise<void>;
     editingExpense: Expense | null;
+    onCancelEdit?: () => void;
 }
 
 const COLORS = ["#4F46E5", "#7C3AED", "#EC4899", "#14B8A6"];
@@ -25,6 +26,9 @@ const COLORS = ["#4F46E5", "#7C3AED", "#EC4899", "#14B8A6"];
 export default function ExpenseSidebar({
     expenses,
     onAddExpense,
+    onUpdateExpense,
+    editingExpense,
+    onCancelEdit,
 }: ExpenseSidebarProps) {
     const [formData, setFormData] = useState({
         title: "",
@@ -33,17 +37,40 @@ export default function ExpenseSidebar({
         date: "",
     });
 
+    useEffect(() => {
+        if (editingExpense) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setFormData({
+                title: editingExpense.title || "",
+                category: editingExpense.category || "",
+                amount: editingExpense.amount !== undefined ? editingExpense.amount.toString() : "",
+                date: editingExpense.date || "",
+            });
+        } else {
+            setFormData({
+                title: "",
+                category: "",
+                amount: "",
+                date: "",
+            });
+        }
+    }, [editingExpense]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const newExpense: Expense = {
+        const expenseData: Expense = {
             title: formData.title,
             category: formData.category,
             amount: Number(formData.amount),
             date: formData.date,
         };
 
-        await onAddExpense(newExpense);
+        if (editingExpense && editingExpense._id) {
+            await onUpdateExpense(editingExpense._id, expenseData);
+        } else {
+            await onAddExpense(expenseData);
+        }
 
         setFormData({
             title: "",
@@ -68,7 +95,7 @@ export default function ExpenseSidebar({
     }));
 
     return (
-        <aside className="h-screen overflow-y-auto border-r bg-gradient-to-b from-slate-50 to-white p-6 flex flex-col">
+        <div className="h-screen overflow-y-auto border-r bg-gradient-to-b from-slate-50 to-white p-6 flex flex-col">
             <div className="mb-8">
                 <h1 className="text-2xl font-bold text-slate-800">
                     Expense Tracker
@@ -135,8 +162,17 @@ export default function ExpenseSidebar({
                     type="submit"
                     className="w-full rounded-2xl bg-indigo-600 py-3 font-medium text-white transition hover:bg-indigo-700"
                 >
-                    Add Expense
+                    {editingExpense ? "Update Expense" : "Add Expense"}
                 </button>
+                {editingExpense && (
+                    <button
+                        type="button"
+                        onClick={onCancelEdit}
+                        className="w-full rounded-2xl border border-slate-200 bg-white py-3 font-medium text-slate-700 transition hover:bg-slate-50"
+                    >
+                        Cancel Edit
+                    </button>
+                )}
             </form>
 
             <div className="mt-10 rounded-3xl bg-white p-4 shadow-md">
@@ -171,6 +207,6 @@ export default function ExpenseSidebar({
                     </div>
                 )}
             </div>
-        </aside>
+        </div>
     );
 }
