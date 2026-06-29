@@ -4,31 +4,26 @@ import { useState } from "react";
 import { Expense } from "@/types/expense";
 
 interface ExpenseFormProps {
-    onAddExpense: (expense: Expense) => void;
+    onAddExpense: (expense: Expense) => Promise<void> | void;
 }
 
-const ExpenseForm = ({ onAddExpense }: ExpenseFormProps) => {
+export default function ExpenseForm({ onAddExpense }: ExpenseFormProps) {
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("");
     const [amount, setAmount] = useState("");
     const [date, setDate] = useState("");
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!title || !category || !amount || !date) {
-            return;
-        }
-
         const newExpense: Expense = {
-            id: Date.now().toString(),
             title,
             category,
             amount: Number(amount),
             date,
         };
 
-        onAddExpense(newExpense);
+        await onAddExpense(newExpense);
 
         // reset form
         setTitle("");
@@ -38,50 +33,50 @@ const ExpenseForm = ({ onAddExpense }: ExpenseFormProps) => {
     };
 
     return (
-        <div className="h-full">
-            <h2 className="text-2xl font-bold mb-6">Add Expense</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <input
-                    type="text"
-                    placeholder="Expense Name"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full border p-3 rounded-lg"
-                />
+            <input
+                type="text"
+                placeholder="Expense title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                required
+            />
 
-                <input
-                    type="text"
-                    placeholder="Category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full border p-3 rounded-lg"
-                />
+            <input
+                type="text"
+                placeholder="Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                required
+            />
 
-                <input
-                    type="number"
-                    placeholder="Amount"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full border p-3 rounded-lg"
-                />
+            <input
+                type="number"
+                placeholder="Amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                required
+            />
 
-                <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full border p-3 rounded-lg"
-                />
+            <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                required
+            />
 
-                <button
-                    type="submit"
-                    className="w-full bg-black text-white py-3 rounded-lg"
-                >
-                    Add Expense
-                </button>
-            </form>
-        </div>
+            <button
+                type="submit"
+                className="w-full rounded-2xl bg-indigo-600 py-3 font-medium text-white hover:bg-indigo-700"
+            >
+                Add Expense
+            </button>
+
+        </form>
     );
-};
-
-export default ExpenseForm;
+}
