@@ -35,6 +35,7 @@ export default function HomePage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchExpenses();
   }, []);
 
@@ -126,8 +127,6 @@ export default function HomePage() {
         <ExpenseSidebar
           expenses={expenses}
           onAddExpense={handleAddExpense}
-          onUpdateExpense={handleUpdateExpense}
-          editingExpense={editingExpense}
         />
       </section>
 

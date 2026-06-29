@@ -13,6 +13,11 @@ import {
 interface ExpenseSidebarProps {
     expenses: Expense[];
     onAddExpense: (expense: Expense) => Promise<void> | void;
+    onUpdateExpense: (
+        id: string,
+        updatedExpense: Expense
+    ) => Promise<void>;
+    editingExpense: Expense | null;
 }
 
 const COLORS = ["#4F46E5", "#7C3AED", "#EC4899", "#14B8A6"];
