@@ -19,7 +19,6 @@ const ExpenseForm = ({ onAddExpense }: ExpenseFormProps) => {
         e.preventDefault();
 
         const newExpense: Expense = {
-            id: Date.now().toString(),
             title: formData.title,
             category: formData.category,
             amount: Number(formData.amount),
